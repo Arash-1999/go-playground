@@ -1,0 +1,5 @@
+server:
+  port: 4123
+
+logger:
+  level: debug
