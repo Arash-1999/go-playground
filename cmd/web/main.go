@@ -3,24 +3,33 @@ package main
 import (
 	"flag"
 	"fmt"
-	"lets-go-book-2022/internal/config"
-	"log"
+	"log/slog"
 	"net/http"
+
+	"lets-go-book-2022/internal/config"
 )
+
+type Application struct {
+	logger slog.Logger
+}
 
 var configPath = flag.String("config", "internal/config/config.yaml", "yaml config path")
 
 func main() {
+	// TODO: use signal to update flags
 	config.Load(*configPath)
 
-	// TODO: config logger
+	app := &Application{
+		logger: *config.ConfigLogger(),
+	}
 
+	// TODO: move routes to a new file (routes.go, ...)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/", app.homeHandler)
 
-	mux.HandleFunc("/snippet", getSnippet)
-	mux.HandleFunc("/snippet/create", postSnippet)
+	mux.HandleFunc("/snippet", app.getSnippet)
+	mux.HandleFunc("/snippet/create", app.postSnippet)
 
 	server := &http.Server{
 		Addr: fmt.Sprintf(":%d", config.Configs.Server.Port),
@@ -29,7 +38,7 @@ func main() {
 		Handler: mux,
 	}
 
-	log.Println("Starting server on :", config.Configs.Server.Port)
+	app.logger.Info("Starting server", "port", config.Configs.Server.Port)
 	err := server.ListenAndServe()
-	log.Fatal(err)
+	app.logger.Error(err.Error())
 }
