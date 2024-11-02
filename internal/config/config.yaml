@@ -3,3 +3,6 @@ server:
 
 logger:
   level: debug
+
+database:
+  dsn: postgresql://postgres:secret@localhost:5432/typewar

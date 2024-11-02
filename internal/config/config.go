@@ -17,8 +17,9 @@ var MapLog = map[string]slog.Level{
 var Configs Config
 
 type Config struct {
-	Server server `yaml:"server"`
-	Logger logger `yaml:"logger"`
+	Server   server   `yaml:"server"`
+	Logger   logger   `yaml:"logger"`
+	Database database `yaml:"database"`
 }
 
 type server struct {
@@ -27,6 +28,10 @@ type server struct {
 
 type logger struct {
 	Level string `yaml:"level"`
+}
+
+type database struct {
+	Dsn string `yaml:"dsn"`
 }
 
 func Load(path string) error {
