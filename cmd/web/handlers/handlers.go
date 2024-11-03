@@ -11,8 +11,6 @@ import (
 func Routes(app *base.Application) http.Handler {
 	mux := http.NewServeMux()
 
-	// mux.HandlerFunc("/", )
-
 	// TODO: change scope structure to pass only needed dependencies
 	// snippetScope := &snippet.Snippet{
 	// 	Logger: app.Logger,
