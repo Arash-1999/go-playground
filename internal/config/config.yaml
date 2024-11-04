@@ -5,4 +5,5 @@ logger:
   level: debug
 
 database:
-  dsn: postgresql://postgres:secret@localhost:5432/typewar
+  # dsn: postgresql://postgres:secret@localhost:5432/typewar
+  dsn: postgresql://postgres:secret@localhost:5432/goplayground

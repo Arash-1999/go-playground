@@ -1,6 +1,7 @@
 package general
 
 import (
+	"fmt"
 	"lets-go-book-2022/cmd/web/base"
 	"net/http"
 )
@@ -16,5 +17,15 @@ func (scope *General) HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("fucking home page."))
+	snippets, err := scope.Env.Db.Snippets.Latest()
+
+	if err != nil {
+		scope.Env.Logger.Error("Postgres Select Error", "route", r.URL.Path, "error", err)
+		http.NotFound(w, r)
+		return
+	}
+
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
+	}
 }

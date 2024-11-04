@@ -21,6 +21,8 @@ func main() {
 	logger := config.ConfigLogger()
 	db := data.NewData()
 
+	defer db.Close()
+
 	app := base.InitApp(logger, db)
 
 	server := &http.Server{

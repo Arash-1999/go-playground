@@ -17,7 +17,5 @@ func NewData() *pgxpool.Pool {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
-	defer db.Close()
-
 	return db
 }
