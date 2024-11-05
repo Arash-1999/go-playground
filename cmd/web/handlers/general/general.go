@@ -17,7 +17,7 @@ func (scope *General) HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	snippets, err := scope.Env.Db.Snippets.Latest()
+	snippets, err := scope.Env.Db.Snippets.Latest(r.Context())
 
 	if err != nil {
 		scope.Env.Logger.Error("Postgres Select Error", "route", r.URL.Path, "error", err)

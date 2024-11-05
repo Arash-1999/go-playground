@@ -27,7 +27,7 @@ func (scope *Snippet) PostSnippet(w http.ResponseWriter, r *http.Request) {
 	title := "0 snail"
 	content := "0 snail\nClimb Mount Fuji,\nBut Slowly, slowly!\n\n- Kobayashi Issa"
 
-	id, err := scope.Env.Db.Snippets.Insert(title, content)
+	id, err := scope.Env.Db.Snippets.Insert(r.Context(), title, content)
 
 	if err != nil {
 		scope.Env.Logger.Error("Postgres Insert Error", "route", r.URL.Path, "error", err, "title", title, "content", content)
@@ -49,7 +49,7 @@ func (scope *Snippet) GetSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	snippet, err := scope.Env.Db.Snippets.Get(id)
+	snippet, err := scope.Env.Db.Snippets.Get(r.Context(), id)
 
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
