@@ -14,15 +14,6 @@ type Snippet struct {
 }
 
 func (scope *Snippet) PostSnippet(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", "POST") // it should be before WriteHeader or Write
-		// w.WriteHeader(405)              // only one time per response
-		// w.Write([]byte("Method Not Allowed"))
-		scope.Env.Logger.Error("Method Not Allowed", "route", r.URL.Path)
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	// TODO: get title and content from request body
 	title := "0 snail"
 	content := "0 snail\nClimb Mount Fuji,\nBut Slowly, slowly!\n\n- Kobayashi Issa"
@@ -36,16 +27,27 @@ func (scope *Snippet) PostSnippet(w http.ResponseWriter, r *http.Request) {
 
 	scope.Env.Logger.Info("Snippet Created", "route", r.URL.Path)
 	fmt.Fprintf(w, "Snippet created with id: %d", id)
-	// http.Redirect(w, r, fmt.Sprintf("/snippet/view?id=%d", id), http.StatusSeeOther)
-	// w.Write([]byte("something created"))
 }
 
-func (scope *Snippet) GetSnippet(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+func (scope *Snippet) GetSnippets(w http.ResponseWriter, r *http.Request) {
+	snippets, err := scope.Env.Db.Snippets.Latest(r.Context())
 
 	if err != nil {
-		http.NotFound(w, r)
-		scope.Env.Logger.Error("Not Found", "route", r.URL.Path, "id", id)
+		// scope.Env.Logger.Error("Postgres Select Error", "route", r.URL.Path, "error", err)
+		scope.Env.ServerError(w, err)
+		return
+	}
+
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
+	}
+}
+
+func (scope *Snippet) GetSingleSnippet(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+
+	if err != nil {
+		http.Error(w, "Invalid Snippet ID.", http.StatusBadRequest)
 		return
 	}
 
@@ -57,11 +59,10 @@ func (scope *Snippet) GetSnippet(w http.ResponseWriter, r *http.Request) {
 			scope.Env.Logger.Error("Not Found", "route", r.URL.Path, "id", id)
 			return
 		} else {
-			fmt.Fprintf(w, "Error in getting snippet with ID %d...\n %s", id, err)
+			scope.Env.ServerError(w, err)
+			fmt.Fprintf(w, "Error in getting snippet with ID %d...", id)
 		}
 	}
 
-	scope.Env.Logger.Info("Snippet Founded", "route", r.URL.Path, "id", id, "data", snippet)
-	// fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
 	fmt.Fprintf(w, "%+v", snippet)
 }

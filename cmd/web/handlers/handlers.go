@@ -26,8 +26,9 @@ func Routes(app *base.Application) http.Handler {
 	snippetScope := &snippet.Snippet{
 		Env: app,
 	}
-	mux.HandleFunc("/snippet", snippetScope.GetSnippet)
-	mux.HandleFunc("/snippet/create", snippetScope.PostSnippet)
+	mux.HandleFunc("GET /snippet", snippetScope.GetSnippets)
+	mux.HandleFunc("POST /snippet", snippetScope.PostSnippet)
+	mux.HandleFunc("GET /snippet/{id}", snippetScope.GetSingleSnippet)
 
 	// middlewares
 	muMux := &MwMux{mux: mux}
