@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"lets-go-book-2022/cmd/web/base"
@@ -13,15 +14,29 @@ type Snippet struct {
 	Env *base.Application
 }
 
-func (scope *Snippet) PostSnippet(w http.ResponseWriter, r *http.Request) {
-	// TODO: get title and content from request body
-	title := "0 snail"
-	content := "0 snail\nClimb Mount Fuji,\nBut Slowly, slowly!\n\n- Kobayashi Issa"
+// TODO: manage json structs folder structre
+type PostSnippetBody struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
 
-	id, err := scope.Env.Db.Snippets.Insert(r.Context(), title, content)
+func (scope *Snippet) PostSnippet(w http.ResponseWriter, r *http.Request) {
+	var snippet PostSnippetBody
+	json.NewDecoder(r.Body).Decode(&snippet)
+
+	if snippet.Title == "" {
+		scope.Env.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	if snippet.Content == "" {
+		scope.Env.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	id, err := scope.Env.Db.Snippets.Insert(r.Context(), snippet.Title, snippet.Content)
 
 	if err != nil {
-		scope.Env.Logger.Error("Postgres Insert Error", "route", r.URL.Path, "error", err, "title", title, "content", content)
+		scope.Env.Logger.Error("Postgres Insert Error", "route", r.URL.Path, "error", err, "data", snippet)
 		return
 	}
 
