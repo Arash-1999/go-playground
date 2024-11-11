@@ -31,17 +31,17 @@ func Routes(app *base.Application) http.Handler {
 	mux.HandleFunc("GET /snippet/{id}", snippetScope.GetSingleSnippet)
 
 	// middlewares
-	muMux := &MwMux{mux: mux}
+	mwMux := &MwMux{mux: mux}
 
-	muMux.Use(middleware.SecureHeaders)
+	mwMux.Use(middleware.SecureHeaders)
 
 	logMiddleware := &middleware.LogMiddleware{Logger: app.Logger}
-	muMux.Use(logMiddleware.LogRequest)
+	mwMux.Use(logMiddleware.LogRequest)
 
 	recoverPanicMiddleware := &middleware.RecoverPanicMiddleware{App: app}
-	muMux.Use(recoverPanicMiddleware.Recover)
+	mwMux.Use(recoverPanicMiddleware.Recover)
 
-	return muMux.mux
+	return mwMux.mux
 }
 
 type MwMux struct {

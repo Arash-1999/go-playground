@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"lets-go-book-2022/cmd/web/base"
 	"lets-go-book-2022/cmd/web/base/data"
@@ -29,10 +30,12 @@ func main() {
 		Addr: fmt.Sprintf(":%d", config.Configs.Server.Port),
 		// TODO: pass error logger
 		// ErrorLog: ,
-		Handler: handlers.Routes(app),
+		Handler:      handlers.Routes(app),
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
 	}
 
-	log.Println("Starting server on :", config.Configs.Server.Port)
+	logger.Info("Starting server on :", "port", config.Configs.Server.Port)
 	err := server.ListenAndServe()
 	log.Fatal(err)
 }
