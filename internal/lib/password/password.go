@@ -12,7 +12,20 @@ type Password struct {
 }
 
 func (p *Password) Set(pass string) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(pass), 12)
+	// TODO: manage password hash before bcrypt
+	// sha := sha256.New()
+	// salt := make([]byte, saltSize)
+	// _, err := rand.Read(salt[:])
+	//
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// passBytes := []byte(pass)
+	// passBytes = append(passBytes, salt...)
+	//
+	// sha.Write(passBytes)
+	// hash, err := bcrypt.GenerateFromPassword(sha.Sum(nil), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 
 	if err != nil {
 		return err

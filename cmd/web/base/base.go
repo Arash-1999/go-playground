@@ -9,6 +9,7 @@ import (
 
 type Data struct {
 	Snippets *models.SnippetModel
+	User     *models.UserModel
 }
 
 type Application struct {
@@ -21,6 +22,7 @@ func InitApp(logger *slog.Logger, db *pgxpool.Pool) *Application {
 		Logger: logger,
 		Db: &Data{
 			Snippets: &models.SnippetModel{DB: db},
+			User:     &models.UserModel{DB: db},
 		},
 	}
 

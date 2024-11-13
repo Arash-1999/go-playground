@@ -7,6 +7,7 @@ import (
 	"lets-go-book-2022/cmd/web/base/middleware"
 	"lets-go-book-2022/cmd/web/handlers/general"
 	"lets-go-book-2022/cmd/web/handlers/snippet"
+	"lets-go-book-2022/cmd/web/handlers/user"
 )
 
 func Routes(app *base.Application) http.Handler {
@@ -29,6 +30,11 @@ func Routes(app *base.Application) http.Handler {
 	mux.HandleFunc("GET /snippet", snippetScope.GetSnippets)
 	mux.HandleFunc("POST /snippet", snippetScope.PostSnippet)
 	mux.HandleFunc("GET /snippet/{id}", snippetScope.GetSingleSnippet)
+
+	userScope := &user.User{
+		Env: app,
+	}
+	mux.HandleFunc("POST /user", userScope.PostUser)
 
 	// middlewares
 	mwMux := &MwMux{mux: mux}
